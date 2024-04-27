@@ -1,6 +1,6 @@
 # coding:utf-8
 from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtWidgets import QAction, QWidget, QVBoxLayout, QButtonGroup
+from PyQt5.QtWidgets import QAction, QWidget, QVBoxLayout, QButtonGroup,QLabel
 from qfluentwidgets import (LineEdit,BodyLabel,PushButton,FlowLayout,VBoxLayout)
 from PyQt5.QtGui import QPainter
 

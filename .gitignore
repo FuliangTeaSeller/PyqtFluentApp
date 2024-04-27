@@ -1,5 +1,7 @@
-# 忽略根目录下的deprecated文件夹
 /deprecated/
-
-# 忽略根目录下的“新代码”文件夹
 /新代码/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class

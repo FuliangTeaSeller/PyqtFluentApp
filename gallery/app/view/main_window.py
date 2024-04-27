@@ -10,6 +10,7 @@ from qfluentwidgets import FluentIcon as FIF
 from .predict_interface import PredictInterface
 from .gallery_interface import GalleryInterface
 from .home_interface import HomeInterface
+from .introduction_interface import IntroductionInterface
 from ..common.config import ZH_SUPPORT_URL, EN_SUPPORT_URL, cfg
 from ..common.icon import Icon
 from ..common.signal_bus import signalBus
@@ -26,6 +27,7 @@ class MainWindow(FluentWindow):
         # create sub interface
         self.homeInterface = HomeInterface(self)
         self.predictInterface= PredictInterface(self)
+        self.introductionInterface = IntroductionInterface(self)
 
         # enable acrylic effect
         # self.navigationInterface.setAcrylicEnabled(True)
@@ -48,7 +50,9 @@ class MainWindow(FluentWindow):
         self.navigationInterface.addSeparator()
 
         pos = NavigationItemPosition.SCROLL
-        self.addSubInterface(self.predictInterface, FIF.CHECKBOX,t.predict, pos)
+        self.addSubInterface(self.predictInterface, FIF.CHECKBOX,'预测界面', pos)
+        self.addSubInterface(self.introductionInterface, FIF.CAFE,'介绍界面', pos)
+        
 
     def initWindow(self):
         # self.resize(960, 780)

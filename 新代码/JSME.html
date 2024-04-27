@@ -1,0 +1,33 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>JSME Molecular Editor</title>
+  <script type="text/javascript" language="javascript" src="jsme/jsme.nocache.js"></script>
+</head>
+<body>
+    <!-- Create a container for JSME editor -->
+    <div id="jsme_container" style="text-align: center"></div>
+
+    <!-- Create a container for SMILES display -->
+    <div>
+        <label>SMILES:</label>
+        <input type="text" id="inputField" style="width: 220px;" readonly>
+        <button onclick="updateSmiles()">绘画完毕</button>
+    </div>
+
+  <script>
+    // 创建 JSME 编辑器实例
+    function jsmeOnLoad() {
+        jsmeApplet = new JSApplet.JSME("jsme_container", "380px", "340px", {
+            "text-align": "center",
+        });
+    }
+    // Function to update the SMILES input field with the current molecule
+    function updateSmiles() {
+            var smiles = jsmeApplet.smiles();
+            inputField.value = smiles;
+        }
+  </script>
+</body>
+</html>

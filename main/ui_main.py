@@ -37,6 +37,10 @@ app.installTranslator(galleryTranslator)
 
 # create main window
 w = MainWindow()
-w.show()
 
+# w.setMicaEffectEnabled(True)
+# w.updateFrameless()
+w.show()
+# w.setMicaEffectEnabled(True)
+# w.updateFrameless()
 app.exec_()

@@ -21,7 +21,7 @@ class BannerWidget(QWidget):
         self.setFixedHeight(336)
 
         self.vBoxLayout = QVBoxLayout(self)
-        self.galleryLabel = QLabel('智元 —— IntelliMole', self)
+        self.galleryLabel = QLabel('Detective Molecular Inspector 分子探长', self)
         self.banner = QPixmap(':/gallery/images/header1.png')
         self.linkCardView = LinkCardView(self)
 

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>346</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="RadioButton" name="radioButton">
+     <property name="text">
+      <string>CIGIN</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="RadioButton" name="radioButton_2">
+     <property name="text">
+      <string>APPAT</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="QPlainTextEdit" name="plainTextEdit"/>
+   </item>
+   <item row="3" column="0" colspan="2">
+    <widget class="ProgressBar" name="progressBar">
+     <property name="value">
+      <number>0</number>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <widget class="PushButton" name="pushButton">
+     <property name="text">
+      <string>导入文件</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="PushButton" name="pushButton_2">
+     <property name="text">
+      <string>批量预测</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="PushButton" name="pushButton_3">
+     <property name="text">
+      <string>保存文件</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PushButton</class>
+   <extends>QPushButton</extends>
+   <header>qfluentwidgets.h</header>
+  </customwidget>
+  <customwidget>
+   <class>RadioButton</class>
+   <extends>QRadioButton</extends>
+   <header>qfluentwidgets.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ProgressBar</class>
+   <extends>QProgressBar</extends>
+   <header>qfluentwidgets.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

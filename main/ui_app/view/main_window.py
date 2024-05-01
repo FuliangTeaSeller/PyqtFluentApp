@@ -17,6 +17,11 @@ from ..common.signal_bus import signalBus
 from ..common.translator import Translator
 # from ..common import resource
 from ..resource import resource
+# from GUI.interface.CIGIN_interface import Func1Widget as CIGINWidget
+# from GUI.interface.Home_interface import HomeWidget
+# from GUI.interface.Tox21_interface import Func2Widget as Tox21Widget
+# from GUI.interface.File_interface import Func3Widget as FileimportWidget
+# from tox_21.prediction import resource_path
 
 class MainWindow(FluentWindow):
 
@@ -27,16 +32,17 @@ class MainWindow(FluentWindow):
         # create sub interface
         self.homeInterface = HomeInterface(self)
         self.predictInterface= PredictInterface(self)
+        
         self.introductionInterface = IntroductionInterface(self)
 
         # enable acrylic effect
         # self.navigationInterface.setAcrylicEnabled(True)
 
         self.connectSignalToSlot()
-
         # add items to navigation interface
         self.initNavigation()
         self.splashScreen.finish()
+        self.updateFrameless()
 
     def connectSignalToSlot(self):
         signalBus.micaEnableChanged.connect(self.setMicaEffectEnabled)
@@ -46,12 +52,13 @@ class MainWindow(FluentWindow):
     def initNavigation(self):
         # add navigation items
         t = Translator()
-        self.addSubInterface(self.homeInterface, FIF.HOME, self.tr('Home'))
+        self.addSubInterface(self.homeInterface, FIF.HOME, '首页')
         self.navigationInterface.addSeparator()
 
         pos = NavigationItemPosition.SCROLL
         self.addSubInterface(self.predictInterface, FIF.CHECKBOX,'预测界面', pos)
         self.addSubInterface(self.introductionInterface, FIF.CAFE,'介绍界面', pos)
+        
         
 
     def initWindow(self):
@@ -60,9 +67,9 @@ class MainWindow(FluentWindow):
         self.resize(780, 780)
         self.setMinimumWidth(780)
         self.setWindowIcon(QIcon(':/gallery/images/logo_new.png'))
-        self.setWindowTitle('分子预测软件')
+        self.setWindowTitle('Detective Molecular Inspector 分子探长')
 
-        self.setMicaEffectEnabled(cfg.get(cfg.micaEnabled))
+        # self.setMicaEffectEnabled(cfg.get(cfg.micaEnabled))
 
         # create splash screen
         self.splashScreen = SplashScreen(self.windowIcon(), self)

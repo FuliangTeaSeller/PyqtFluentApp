@@ -1,9 +1,10 @@
-GalleryInterface,
-ToolBar,
-#view {
+GalleryInterface,ToolBar,#view {
     background-color: transparent;
 }
-
+QWebEngineView{
+    background-color: transparent;
+    
+}
 QScrollArea {
     border: none;
 }

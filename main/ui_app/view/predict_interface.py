@@ -51,8 +51,8 @@ class PredictInterface(GalleryInterface):
         self.pushButton.setObjectName("pushButton")
         self.pushButton.setText("预测")
         
-        self.Tab2_Input()
         self.Tab1_Jsme()
+        self.Tab2_Input()
         
         self.vBoxLayout.addWidget(self.pivot, 0, Qt.AlignHCenter)
         self.vBoxLayout.addWidget(self.stackedWidget)
@@ -74,9 +74,9 @@ class PredictInterface(GalleryInterface):
     def Tox21(self):
         # 获取分子式
         current_index = self.stackedWidget.currentIndex()
-        if current_index == 0:
+        if current_index == 1:
             molecule = self.textEdit.toPlainText()
-        elif current_index ==1:
+        elif current_index ==0:
             # 执行 JavaScript 代码获取 SMILES 字符串
             js_code = "jsmeApplet.smiles();"
             self.web_view.page().runJavaScript(js_code, self.setFromJSMESmiles)

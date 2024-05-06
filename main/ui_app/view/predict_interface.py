@@ -7,12 +7,16 @@ from PyQt5.QtGui import QPainter,QFont
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 from qfluentwidgets import FluentIcon as FIF
-from qframelesswindow.webengine import FramelessWebEngineView
+#from qframelesswindow.webengine import FramelessWebEngineView
 
 
 from .gallery_interface import GalleryInterface
 from ..common.translator import Translator
 from ..common.style_sheet import StyleSheet
+
+import sys
+sys.path.append("E:/Python/PyqtFluentApp/main/Predictor")
+from Predictor.prediction import main as Predict
 from GUI.interface.tox_result_interface import Result as tox_result
 
 from tox_21.prediction import resource_path
@@ -69,24 +73,35 @@ class PredictInterface(GalleryInterface):
         
     def Tox21(self):
         # 获取分子式
-        molecule = self.currentsmiles()
-        self.tox_result = tox_result(molecule)
-        self.tox_result.show()
+        current_index = self.stackedWidget.currentIndex()
+        if current_index == 0:
+            molecule = self.textEdit.toPlainText()
+        elif current_index ==1:
+            # 执行 JavaScript 代码获取 SMILES 字符串
+            js_code = "jsmeApplet.smiles();"
+            self.web_view.page().runJavaScript(js_code, self.setFromJSMESmiles)
+            molecule = self.currentsmiles
+        else :
+            pass
+        #self.tox_result = tox_result(molecule)
+        #self.tox_result.show()
+        print(molecule)
+        result = Predict(molecule)
         
     def Tab1_Jsme(self):
         self.tab_1 = QWidget()
         self.addSubInterface(self.tab_1, 'tab_1', '使用JSME分子编辑器画出分子')
         # 创建WebEngineView部件
-        self.smilelabel = BodyLabel("当前smiles:")
+        '''self.smilelabel = BodyLabel("当前smiles:")
         self.smilelabel.setWordWrap(True)
-        self.smilelabel.setMinimumSize(100,10)
+        self.smilelabel.setMinimumSize(100,10)'''
         
         self.web_view = QWebEngineView(self)
         # self.web_view = QLabel("JSME编辑器")
         self.web_view.setMinimumSize(405, 350)
         
-        self.applybutton = PushButton('绘制完毕')
-        self.applybutton.clicked.connect(self.fetchSmiles)
+        #self.applybutton = PushButton('绘制完毕')
+        #self.applybutton.clicked.connect(self.fetchSmiles)
         
         # 加载JSME编辑器的HTML文件
         # 获取当前文件的绝对路径
@@ -98,16 +113,16 @@ class PredictInterface(GalleryInterface):
 
         # self.layout_tab1 = QVBoxLayout()
         self.hlayout_tab1 = QHBoxLayout()
-        self.vlayout_tab1 = QVBoxLayout()
-        self.vlayout_tab1.addWidget(self.applybutton,alignment=Qt.AlignHCenter)
-        self.vlayout_tab1.addWidget(self.smilelabel,alignment=Qt.AlignHCenter)
+        #self.vlayout_tab1 = QVBoxLayout()
+        #self.vlayout_tab1.addWidget(self.applybutton,alignment=Qt.AlignHCenter)
+        #self.vlayout_tab1.addWidget(self.smilelabel,alignment=Qt.AlignHCenter)
         
-        self.vwidget_tab1 = QWidget()
-        self.vwidget_tab1.setLayout(self.vlayout_tab1)
+        #self.vwidget_tab1 = QWidget()
+        #self.vwidget_tab1.setLayout(self.vlayout_tab1)
         
         self.hlayout_tab1.addWidget(self.web_view,alignment=Qt.AlignHCenter)
-        self.hlayout_tab1.addWidget(self.vwidget_tab1,alignment=Qt.AlignHCenter)
-        # self.hlayout_tab1.addWidget(self.applybutton,alignment=Qt.AlignHCenter)
+        #self.hlayout_tab1.addWidget(self.vwidget_tab1,alignment=Qt.AlignHCenter)
+        #self.hlayout_tab1.addWidget(self.applybutton,alignment=Qt.AlignHCenter)
         
         self.tab_1.setLayout(self.hlayout_tab1)
         
@@ -169,7 +184,7 @@ class PredictInterface(GalleryInterface):
         # 执行 JavaScript 代码获取 SMILES 字符串
         js_code = "jsmeApplet.smiles();"
         self.web_view.page().runJavaScript(js_code, self.setFromJSMESmiles)
-        self.smilelabel.setText(self.currentsmiles)
+        #self.smilelabel.setText(self.currentsmiles)
 
     def updateSmiles(self, smiles):
         # self.textEdit.setPlainText(self.currentsmiles)

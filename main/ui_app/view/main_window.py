@@ -66,13 +66,13 @@ class MainWindow(FluentWindow):
         # self.setMinimumWidth(760)
         self.resize(780, 780)
         self.setMinimumWidth(780)
-        self.setWindowIcon(QIcon(':/gallery/images/logo_new.png'))
+        self.setWindowIcon(QIcon('E:/Python/PyqtFluentApp/main/ui_app/resource/images/logo_new.png'))
         self.setWindowTitle('Detective Molecular Inspector 分子探长')
 
         # self.setMicaEffectEnabled(cfg.get(cfg.micaEnabled))
 
         # create splash screen
-        self.splashScreen = SplashScreen(self.windowIcon(), self)
+        self.splashScreen = SplashScreen(icon=self.windowIcon(), parent=self)
         self.splashScreen.setIconSize(QSize(106, 106))
         self.splashScreen.raise_()
 

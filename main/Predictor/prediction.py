@@ -36,7 +36,7 @@ dict = {
 def main(molecule):
     data = MoleculeDataset([MoleculeDatapoint([molecule])])
     args = TrainArgs().parse_args()
-    model = load_checkpoint(('E:/Python/B-Tox/My_mol/models/MGA_model.pt'), device=args.device)
+    model = load_checkpoint(('E:/Python/PyqtFluentApp/main/B_Pred/MGA_model.pt'), device=args.device)
     model.eval()
     pred = model(data.batch_graph(), data.batch_dgl())
     P = torch.sigmoid(pred)

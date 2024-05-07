@@ -7,6 +7,7 @@ from qfluentwidgets import (NavigationAvatarWidget, NavigationItemPosition, Mess
                             SplashScreen)
 from qfluentwidgets import FluentIcon as FIF
 
+from .batchPredict_interface import BatchPredictInterface
 from .predict_interface import PredictInterface
 from .gallery_interface import GalleryInterface
 from .home_interface import HomeInterface
@@ -32,7 +33,7 @@ class MainWindow(FluentWindow):
         # create sub interface
         self.homeInterface = HomeInterface(self)
         self.predictInterface= PredictInterface(self)
-        
+        self.BatchPredictInterface = BatchPredictInterface(self)
         self.introductionInterface = IntroductionInterface(self)
 
         # enable acrylic effect
@@ -57,6 +58,7 @@ class MainWindow(FluentWindow):
 
         pos = NavigationItemPosition.SCROLL
         self.addSubInterface(self.predictInterface, FIF.CHECKBOX,'预测界面', pos)
+        self.addSubInterface(self.BatchPredictInterface, FIF.EDIT, '批量处理界面', pos)
         self.addSubInterface(self.introductionInterface, FIF.CAFE,'介绍界面', pos)
         
         

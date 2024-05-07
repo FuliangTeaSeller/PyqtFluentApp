@@ -21,3 +21,4 @@ class Translator(QObject):
         self.price = self.tr("Price")
         # self.predict = self.tr("Predict")
         self.predict = self.tr("预测")
+        self.batchpredict = self.tr("批量处理")

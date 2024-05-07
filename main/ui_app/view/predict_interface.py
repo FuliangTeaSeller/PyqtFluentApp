@@ -50,6 +50,9 @@ class PredictInterface(GalleryInterface):
         self.pushButton = PushButton()
         self.pushButton.setObjectName("pushButton")
         self.pushButton.setText("预测")
+
+        '''self.applybutton = PushButton('绘制完毕')
+        self.applybutton.clicked.connect(self.fetchSmiles)'''
         
         self.Tab1_Jsme()
         self.Tab2_Input()
@@ -58,7 +61,9 @@ class PredictInterface(GalleryInterface):
         self.vBoxLayout.addWidget(self.stackedWidget)
         # self.vBoxLayout.addWidget(self.lineEdit)
         # self.vBoxLayout.addWidget(self.smilelabel)
+        #self.vBoxLayout.addWidget(self.applybutton)
         self.vBoxLayout.addWidget(self.pushButton)
+
         
         # 连接信号并初始化当前标签页
         self.stackedWidget.currentChanged.connect(self.onCurrentIndexChanged)
@@ -80,6 +85,7 @@ class PredictInterface(GalleryInterface):
             # 执行 JavaScript 代码获取 SMILES 字符串
             js_code = "jsmeApplet.smiles();"
             self.web_view.page().runJavaScript(js_code, self.setFromJSMESmiles)
+            self.web_view.page().runJavaScript(js_code, self.setFromJSMESmiles)
             molecule = self.currentsmiles
         else :
             pass
@@ -100,8 +106,8 @@ class PredictInterface(GalleryInterface):
         # self.web_view = QLabel("JSME编辑器")
         self.web_view.setMinimumSize(405, 350)
         
-        #self.applybutton = PushButton('绘制完毕')
-        #self.applybutton.clicked.connect(self.fetchSmiles)
+        '''self.applybutton = PushButton('绘制完毕')
+        self.applybutton.clicked.connect(self.fetchSmiles)'''
         
         # 加载JSME编辑器的HTML文件
         # 获取当前文件的绝对路径
@@ -136,9 +142,11 @@ class PredictInterface(GalleryInterface):
         self.textEdit.textChanged.connect(self.setFromTextEditSmiles)
         self.layout_tab2.addWidget(self.textEdit,alignment=Qt.AlignHCenter)
         self.tab_2.setLayout(self.layout_tab2)
-        self.textEdit.setPlainText("在此直接输入smiles")
+        #self.textEdit.setPlainText("在此直接输入smiles")
+        self.textEdit.setPlaceholderText("在此直接输入smiles")
         self.addSubInterface(self.tab_2, 'tab_2', '直接输入smiles')
-    
+
+
     def plot_spider(self):
         # 计算角度
         angles = np.linspace(0, 2 * np.pi, len(properties), endpoint=False).tolist()

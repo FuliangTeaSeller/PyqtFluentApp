@@ -89,7 +89,7 @@ class PredictInterface(GalleryInterface):
         #self.tox_result.show()
         print('molecule:')
         print(molecule)
-        # result = Predict(molecule)
+        result = Predict(molecule)
         
     def Tab1_Jsme(self):
         self.tab_1 = QWidget()

@@ -1,5 +1,6 @@
 # coding:utf-8
 import io, os
+from time import sleep
 from PyQt5.QtCore import Qt, QSize,QUrl,QTimer
 from PyQt5.QtWidgets import QAction, QWidget, QVBoxLayout, QButtonGroup,QLabel,QStackedWidget,QHBoxLayout
 from qfluentwidgets import (LineEdit,BodyLabel,PushButton,FlowLayout,VBoxLayout,Pivot,PlainTextEdit)
@@ -91,6 +92,7 @@ class PredictInterface(GalleryInterface):
             pass
         #self.tox_result = tox_result(molecule)
         #self.tox_result.show()
+        print('molecule:')
         print(molecule)
         result = Predict(molecule)
         
@@ -139,7 +141,7 @@ class PredictInterface(GalleryInterface):
         self.tab_2 = QWidget()
         self.layout_tab2 = QVBoxLayout()
         self.textEdit = PlainTextEdit()
-        self.textEdit.textChanged.connect(self.setFromTextEditSmiles)
+        # self.textEdit.textChanged.connect(self.setFromTextEditSmiles)
         self.layout_tab2.addWidget(self.textEdit,alignment=Qt.AlignHCenter)
         self.tab_2.setLayout(self.layout_tab2)
         #self.textEdit.setPlainText("在此直接输入smiles")
@@ -192,16 +194,8 @@ class PredictInterface(GalleryInterface):
         # 执行 JavaScript 代码获取 SMILES 字符串
         js_code = "jsmeApplet.smiles();"
         self.web_view.page().runJavaScript(js_code, self.setFromJSMESmiles)
-        #self.smilelabel.setText(self.currentsmiles)
-
-    def updateSmiles(self, smiles):
-        # self.textEdit.setPlainText(self.currentsmiles)
-        self.smilelabel.setText(self.currentsmiles)
 
     def setFromJSMESmiles(self, smiles):
         self.currentsmiles = smiles
         print("Current SMILES:", self.currentsmiles)
         
-    def setFromTextEditSmiles(self):
-        self.currentSmiles = self.textEdit.toPlainText()
-        print("Updated SMILES:", self.currentSmiles)  # 可选：打印当前 SMILES 以验证

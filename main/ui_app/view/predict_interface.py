@@ -3,14 +3,14 @@ import io, os
 from time import sleep
 from PyQt5.QtCore import Qt, QSize,QUrl,QTimer
 from PyQt5.QtWidgets import QAction, QWidget, QVBoxLayout, QButtonGroup,QLabel,QStackedWidget,QHBoxLayout
-from qfluentwidgets import (LineEdit,BodyLabel,PushButton,FlowLayout,VBoxLayout,Pivot,PlainTextEdit)
+from qfluentwidgets import (LineEdit,BodyLabel,PushButton,FlowLayout,VBoxLayout,Pivot,PlainTextEdit,InfoBar,InfoBarPosition)
 from PyQt5.QtGui import QPainter,QFont
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 from qfluentwidgets import FluentIcon as FIF
-#from qframelesswindow.webengine import FramelessWebEngineView
+from qframelesswindow.webengine import FramelessWebEngineView
 
-
+from .predict_result_interface import PredictResultInterface
 from .gallery_interface import GalleryInterface
 from ..common.translator import Translator
 from ..common.style_sheet import StyleSheet
@@ -39,7 +39,6 @@ class PredictInterface(GalleryInterface):
         self.pivot = Pivot(self)
         self.stackedWidget = QStackedWidget(self)
         
-
         # 设置定时器来定期从 JSME 编辑器获取 SMILES 字符串
         # self.timer = QTimer(self)
         # self.timer.timeout.connect(self.fetchSmiles)
@@ -78,6 +77,15 @@ class PredictInterface(GalleryInterface):
 
         
     def Tox21(self):
+        InfoBar.info(
+        title='预测中',
+        content="请稍等...",
+        orient=Qt.Horizontal,
+        isClosable=False,
+        position=InfoBarPosition.TOP,
+        duration=5000,
+        parent=self
+        )
         # 获取分子式
         current_index = self.stackedWidget.currentIndex()
         if current_index == 1:
@@ -94,7 +102,23 @@ class PredictInterface(GalleryInterface):
         #self.tox_result.show()
         print('molecule:')
         print(molecule)
+
+
         result = Predict(molecule)
+        InfoBar.success(
+        title='预测成功',
+        content="自动打开结果界面",
+        orient=Qt.Horizontal,
+        isClosable=False,
+        position=InfoBarPosition.TOP,
+        duration=5000,
+        parent=self
+        )
+        print('result:')
+        print(result)
+        
+        self.predictResultInterface = PredictResultInterface(result)
+        self.predictResultInterface.show()
         
     def Tab1_Jsme(self):
         self.tab_1 = QWidget()
@@ -105,6 +129,7 @@ class PredictInterface(GalleryInterface):
         self.smilelabel.setMinimumSize(100,10)'''
         
         self.web_view = QWebEngineView(self)
+        # self.web_view = FramelessWebEngineView(self)
         # self.web_view = QLabel("JSME编辑器")
         self.web_view.setMinimumSize(405, 350)
         

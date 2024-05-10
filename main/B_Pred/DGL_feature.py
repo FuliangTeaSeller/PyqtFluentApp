@@ -188,17 +188,19 @@ def etype_features(bond, use_chirality=True, atompair=True):
 
 
 def construct_RGCN_bigraph_from_smiles(smiles):
-    g = DGLGraph()
+
+    #g = DGLGraph()
+
 
     # Add nodes
     mol = MolFromSmiles(smiles)
     num_atoms = mol.GetNumAtoms()
-    g.add_nodes(num_atoms)
+    #g.add_nodes(num_atoms)
     atoms_feature_all = []
     for atom_index, atom in enumerate(mol.GetAtoms()):
         atom_feature = atom_features(atom).tolist()
         atoms_feature_all.append(atom_feature)
-    g.ndata["atom"] = torch.tensor(atoms_feature_all)
+    #g.ndata["atom"] = torch.tensor(atoms_feature_all)
 
 
 
@@ -217,13 +219,17 @@ def construct_RGCN_bigraph_from_smiles(smiles):
         etype_feature_all.append(etype_feature)
         etype_feature_all.append(etype_feature)
 
-    g.add_edges(src_list, dst_list)
+    #g.add_edges(src_list, dst_list)
+    g = dgl.graph((torch.tensor(src_list), torch.tensor(dst_list)), num_nodes=num_atoms)
+    g.ndata["atom"] = torch.tensor(atoms_feature_all)
     normal_all = []
     for i in etype_feature_all:
         normal = etype_feature_all.count(i)/len(etype_feature_all)
         normal = round(normal, 1)
         normal_all.append(normal)
 
+    #g.edata["etype"] = torch.tensor(etype_feature_all)
+    #g.edata["normal"] = torch.tensor(normal_all)
     g.edata["etype"] = torch.tensor(etype_feature_all)
     g.edata["normal"] = torch.tensor(normal_all)
     return g
@@ -570,7 +576,9 @@ class BatchMolDGL:
     
 
 
-
+if __name__ == '__main__':
+    smiles = 'CCOCCC'
+    g = construct_RGCN_bigraph_from_smiles(smiles)
 
 
 

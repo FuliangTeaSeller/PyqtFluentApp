@@ -27,6 +27,7 @@ class TrainArgs(Tap):
 
     group_path: str = 'E:/Python/B-Tox/data/A.csv'
 
+    return_weight: bool = True
 
     model_num: int = 1
 
@@ -42,7 +43,7 @@ class TrainArgs(Tap):
 
     num_folds: int = 1
 
-    data_path = ('E:/Python/B-Tox/data/regression_all.csv')#'E:/Python/chemprop-master/chemprop/data/bbbp.csv'
+    data_path = ('E:/Python/B-Tox/data/all.csv')#'E:/Python/chemprop-master/chemprop/data/bbbp.csv'
 
     classification_num: int = 1
 
@@ -63,7 +64,7 @@ class TrainArgs(Tap):
 
     extra_metrics: List[Metric] = []
 
-    dataset_type: Literal['regression', 'classification', 'multiclass', 'spectra'] = 'regression'
+    dataset_type: Literal['regression', 'classification', 'multiclass', 'spectra'] = 'classification'
 
     log_frequency: int = 10
 

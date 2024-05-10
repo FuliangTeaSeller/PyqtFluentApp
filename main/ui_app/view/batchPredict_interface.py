@@ -8,7 +8,7 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 from qfluentwidgets import FluentIcon as FIF
 #from qframelesswindow.webengine import FramelessWebEngineView
-
+import itertools
 import pandas as pd
 from .gallery_interface import GalleryInterface
 from ..common.translator import Translator
@@ -69,8 +69,8 @@ class BatchPredictInterface(GalleryInterface):
         #self.vBoxLayout.addWidget(self.saveButton)
 
 
-        self.content_pd = ''
     def ImportFile(self):
+        global content_pd
         file_dialog = QFileDialog()
         file_dialog.setFileMode(QFileDialog.ExistingFiles)
         files = file_dialog.getOpenFileNames(self, "选择要导入的文件", '', 'CSV文件(*.csv);;TXT文件(*.txt)')
@@ -79,13 +79,13 @@ class BatchPredictInterface(GalleryInterface):
             for file_path in files[0]:
                 file_ext = os.path.splitext(file_path)[1]
                 if file_ext == ".csv":
-                    self.content_pd = pd.read_csv(file_path,sep=';') # 读取CSV文件
+                    content_pd = pd.read_csv(file_path,sep=';') # 读取CSV文件
                 elif file_ext == ".txt":
-                    self.content_pd = pd.read_csv(file_path, delimiter=";") # 读取文本文件
+                    content_pd = pd.read_csv(file_path, delimiter=";") # 读取文本文件
                 font = QFont()
                 font.setPointSize(12)
                 font.setFamily('宋体')
-                content = self.content_pd.to_string(index=range(1, len(self.content_pd) + 1))
+                content = content_pd.to_string(index=range(1, len(content_pd) + 1))
                 self.plainTextEdit.setLineWrapMode(QPlainTextEdit.NoWrap)
                 self.plainTextEdit.setPlainText(content)
                 self.plainTextEdit.setFont(font)
@@ -94,11 +94,11 @@ class BatchPredictInterface(GalleryInterface):
         files = QFileDialog.getSaveFileName(self, 'Save File', '', 'CSV文件(*.csv);;TXT文件(*.txt)')
         if files[0]:
             file_path = files[0]
-            self.content_pd.to_csv(file_path)
+            content_pd.to_csv(file_path)
             w = MessageBox('提示', '文件保存完毕',self)
 
     def Batch_predict(self):
-        self.column_names = self.content_pd.columns.tolist()
+        self.column_names = content_pd.columns.tolist()
         if 'smiles' in self.column_names:
             self.labels = ['Carcinogenicity',
                     'Ames Mutagenicity',
@@ -127,8 +127,8 @@ class BatchPredictInterface(GalleryInterface):
                     'SR-MMP',
                     'SR-p53']
             for i in range(len(self.labels)):
-                self.content_pd[self.labels[i]] = None
-            self.smiles_list = self.content_pd['smiles']
+                content_pd[self.labels[i]] = None
+            self.smiles_list = content_pd['smiles']
             self.worker_thread = predThread(self.smiles_list)
             self.worker_thread.update_progress.connect(self.update_progress_bar)
             self.worker_thread.result_ready.connect(self.handle_result)
@@ -150,9 +150,10 @@ class BatchPredictInterface(GalleryInterface):
         Hscrollbar = self.plainTextEdit.horizontalScrollBar()
         Hscrollbar_pos = Hscrollbar.value()
 
+        data = list(itertools.chain.from_iterable(processed_data[0]))
         for i in range(len(self.labels)):
-            self.content_pd.loc[processed_data[1] - 1][i + 1] = processed_data[0][i]
-        content = self.content_pd.to_string(index=range(1, len(self.content_pd) + 1))
+             content_pd.iat[processed_data[1]-1, i+1] = data[i]
+        content = content_pd.to_string(index=range(1, len(content_pd) + 1))
         self.plainTextEdit.setPlainText(content)
         Vscrollbar.setValue(Vscrollbar_pos)
         Hscrollbar.setValue(Hscrollbar_pos)

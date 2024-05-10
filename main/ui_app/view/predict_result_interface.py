@@ -16,7 +16,7 @@ class ExampleCard(QWidget):
         super().__init__()
         self.setMinimumSize(300, 300)
         self.acrylicLabel=AcrylicLabel(20,QColor(105, 114, 168, 102))
-        self.acrylicLabel.setImage(r'D:\Documents\university\competition\PyqtFluentApp\main\ui_app\resource\images\header.png')
+        self.acrylicLabel.setImage(r'E:\Python\PyqtFluentApp\main\ui_app\resource\images\header.png')
         self.titleLabel=StrongBodyLabel(title)
         self.textLabel=BodyLabel(text)
         self.iconWidget = IconWidget(FIF.ADD)

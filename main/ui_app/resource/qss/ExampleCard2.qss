@@ -1,0 +1,44 @@
+/* 设置 AcrylicLabel 的背景图像和透明度 */
+AcrylicLabel {
+    background-image: url("D:/Documents/university/competition/PyqtFluentApp/main/ui_app/resource/images/header.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: rgba(105, 114, 168, 102); /* 设置透明度 */
+    border-radius: 20px; /* 圆角 */
+}
+
+/* 居中对齐 iconWidget 并设置大小 */
+IconWidget {
+    qproperty-iconSize: 64px; /* 根据需要调整图标大小 */
+    qproperty-sizePolicy: QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed);
+    margin: 0px auto; /* 居中 */
+}
+
+/* titleLabel 和 textLabel 居中对齐 */
+StrongBodyLabel, BodyLabel {
+    text-align: center;
+    color: white;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-weight: bold;
+}
+
+StrongBodyLabel {
+    font-size: 24px; /* 标题字体大小 */
+}
+
+BodyLabel {
+    font-size: 16px; /* 文本字体大小 */
+}
+
+/* 将 titleLabel 和 textLabel 定位在下半部分 */
+VBoxLayout > StrongBodyLabel, VBoxLayout > BodyLabel {
+    margin-top: auto;
+    margin-bottom: 10px; /* 设置适当的间距 */
+    text-align: center;
+}
+
+/* 添加一些全局样式 */
+* {
+    padding: 0px;
+    margin: 0px;
+}

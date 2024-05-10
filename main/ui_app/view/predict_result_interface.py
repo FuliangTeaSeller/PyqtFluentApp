@@ -10,56 +10,8 @@ from qfluentwidgets.components.widgets.acrylic_label import AcrylicLabel
 from qfluentwidgets import FluentIcon as FIF
 # from .gallery_interface import GalleryInterface
 
+
 class ExampleCard(QWidget):
-    def __init__(self, title, subtitle, image_path, icon:FluentIcon, parent=None):
-        super().__init__(parent=parent)
-        self.title = title
-        self.subtitle = subtitle
-        self.image_path = image_path
-        # self.avatar_path = avatar_path
-
-        # Widgets
-        self.card = QFrame(self)
-        self.titleLabel = StrongBodyLabel(title, self.card)
-        self.subtitleLabel = QLabel(subtitle, self.card)
-        self.iconWidget = IconWidget(icon, self.card)
-
-        # Layouts
-        self.vBoxLayout = QVBoxLayout(self)
-        self.cardLayout = QVBoxLayout(self.card)
-        self.bottomLayout = QHBoxLayout()
-
-        self.__init_widget()
-
-    def __init_widget(self):
-        # Setup Avatar
-
-        self.card.setMinimumSize(300, 300)
-        self.iconWidget.setFixedSize(50, 50)
-        # Setup Background Image
-        background_pixmap = QPixmap(self.image_path).scaled(600, 300, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        # Setup Layouts
-        self.vBoxLayout.setSpacing(10)
-        self.vBoxLayout.setContentsMargins(0, 0, 0, 0)
-        self.vBoxLayout.addWidget(self.card)
-
-        self.cardLayout.setSpacing(10)
-        self.cardLayout.setContentsMargins(10, 10, 10, 10)
-        # self.topLayout.addWidget(self.icon, 0, Qt.AlignLeft)
-        # self.topLayout.addStretch(1)
-
-        self.titleLabel.setAlignment(Qt.AlignLeft)
-        self.subtitleLabel.setAlignment(Qt.AlignLeft)
-
-        self.bottomLayout.setSpacing(5)
-        self.bottomLayout.addWidget(self.titleLabel, 0, Qt.AlignLeft)
-        self.bottomLayout.addWidget(self.subtitleLabel, 0, Qt.AlignLeft)
-        self.bottomLayout.addStretch(1)
-
-        self.cardLayout.addLayout(self.bottomLayout)
-        self.card.setLayout(self.cardLayout)
-
-class ExampleCard2(QWidget):
     def __init__(self,title:str,text:str,  icon:FluentIcon,parent: QWidget | None = ...):
         super().__init__()
         self.setMinimumSize(300, 300)
@@ -69,11 +21,57 @@ class ExampleCard2(QWidget):
         self.textLabel=BodyLabel(text)
         self.iconWidget = IconWidget(FIF.ADD)
         
+        self.iconWidget.setFixedSize(64,64)
+        
         self.vBoxLayout=VBoxLayout(self)
         self.vBoxLayout.addWidget(self.acrylicLabel)
         self.vBoxLayout.addWidget(self.titleLabel)
         self.vBoxLayout.addWidget(self.textLabel)
         self.vBoxLayout.addWidget(self.iconWidget)
+        
+        
+        
+        self.setStyleSheet('''
+        # AcrylicLabel {
+        #     /background-image: url("D:/Documents/university/competition/PyqtFluentApp/main/ui_app/resource/images/header.png");
+        #     background-repeat: no-repeat;
+        #     background-position: center;
+        #     background-color: rgba(105, 114, 168, 102);
+        #     border-radius: 20px;
+        # }
+
+        # IconWidget {
+        #     qproperty-iconSize: 64px;
+        #     qproperty-sizePolicy: QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed);
+        #     margin: 0px auto;
+        # }
+
+        # StrongBodyLabel, BodyLabel {
+        #     text-align: center;
+        #     color: white;
+        #     font-family: "Segoe UI", Arial, sans-serif;
+        #     font-weight: bold;
+        # }
+
+        # StrongBodyLabel {
+        #     font-size: 24px;
+        # }
+
+        # BodyLabel {
+        #     font-size: 16px;
+        # }
+
+        VBoxLayout > StrongBodyLabel, VBoxLayout > BodyLabel {
+            margin-top: auto;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        * {
+            padding: 0px;
+            margin: 0px;
+        }
+        ''')
         
         
         
@@ -114,11 +112,11 @@ class PredictResultWidget(ScrollArea):
         self.infoWidget = QWidget(self)
         self.infoWidget.setLayout(self.infoFlowLayout)
         
-        self.resultFlowLayout.addWidget(ExampleCard2("title","subtitle",FIF.ADD))
-        self.resultFlowLayout.addWidget(ExampleCard2("title","subtitle",FIF.ADD))
-        self.resultFlowLayout.addWidget(ExampleCard2("title","subtitle",FIF.ADD))
-        self.infoFlowLayout.addWidget(ExampleCard2("title","subtitle",FIF.ADD))
-        self.infoFlowLayout.addWidget(ExampleCard2("title","subtitle",FIF.ADD))
+        self.resultFlowLayout.addWidget(ExampleCard("title","subtitle",FIF.ADD))
+        self.resultFlowLayout.addWidget(ExampleCard("title","subtitle",FIF.ADD))
+        self.resultFlowLayout.addWidget(ExampleCard("title","subtitle",FIF.ADD))
+        self.infoFlowLayout.addWidget(ExampleCard("title","subtitle",FIF.ADD))
+        self.infoFlowLayout.addWidget(ExampleCard("title","subtitle",FIF.ADD))
         
         self.resultFlowLayout.setContentsMargins(30, 30, 30, 30)
         self.resultFlowLayout.setVerticalSpacing(20)

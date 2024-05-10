@@ -40,9 +40,9 @@ class PredictInterface(GalleryInterface):
         self.stackedWidget = QStackedWidget(self)
         
         # 设置定时器来定期从 JSME 编辑器获取 SMILES 字符串
-        # self.timer = QTimer(self)
-        # self.timer.timeout.connect(self.fetchSmiles)
-        # self.timer.start(100)  # 每1秒获取一次
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.fetchSmiles)
+        self.timer.start(100)  # 每1秒获取一次
 
         # self.lineEdit = LineEdit()
         # self.lineEdit.setObjectName("lineEdit")
@@ -92,9 +92,9 @@ class PredictInterface(GalleryInterface):
             molecule = self.textEdit.toPlainText()
         elif current_index ==0:
             # 执行 JavaScript 代码获取 SMILES 字符串
-            js_code = "jsmeApplet.smiles();"
-            self.web_view.page().runJavaScript(js_code, self.setFromJSMESmiles)
-            self.web_view.page().runJavaScript(js_code, self.setFromJSMESmiles)
+            # js_code = "jsmeApplet.smiles();"
+            # self.web_view.page().runJavaScript(js_code, self.setFromJSMESmiles)
+            # self.web_view.page().runJavaScript(js_code, self.setFromJSMESmiles)
             molecule = self.currentsmiles
         else :
             pass
@@ -222,5 +222,5 @@ class PredictInterface(GalleryInterface):
 
     def setFromJSMESmiles(self, smiles):
         self.currentsmiles = smiles
-        print("Current SMILES:", self.currentsmiles)
+        # print("Current SMILES:", self.currentsmiles)
         

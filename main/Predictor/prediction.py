@@ -3,6 +3,8 @@ sys.path.append('E:/Python/PyqtFluentApp/main/B_Pred')
 from B_Pred.data import MoleculeDataset, MoleculeDatapoint
 from B_Pred.args import TrainArgs
 from B_Pred.utils import load_checkpoint
+from visualization import draw
+from typing import List
 import torch
 
 dict = {
@@ -33,19 +35,24 @@ dict = {
 'SR-MMP':0.13969792425632477,
 'SR-p53':0.013802326284348965
 }
-def main(molecule):
+def main(molecule) -> List:
     data = MoleculeDataset([MoleculeDatapoint([molecule])])
     args = TrainArgs().parse_args()
     model = load_checkpoint(('E:/Python/PyqtFluentApp/main/B_Pred/MGA_model.pt'), device=args.device)
     model.eval()
-    pred = model(data.batch_graph(), data.batch_dgl())
+    pred, atom_weight, node_gradient = model(data.batch_graph(), data.batch_dgl())
     P = torch.sigmoid(pred)
     P = P.tolist()[0]
     result = []
+    imgs = []
     for i in range(len(P)):
         if P[i] >= list(dict.values())[i]:
             result.append(1)
+            img = draw(data.smiles(), node_gradient[i])
+            imgs.append(img)
         else:
             result.append(0)
+            img = draw(data.smiles(), node_gradient[i])
+            imgs.append(img)
 
-    return result
+    return [result, imgs]

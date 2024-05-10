@@ -1,21 +1,23 @@
 from typing import List, Union, Tuple
-from .DGL_feature import MolDGL, BatchMolDGL
+from DGL_feature import MolDGL, BatchMolDGL
 import numpy as np
 from rdkit import Chem
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 #from .mpn import MPN
-from .args import TrainArgs
-from .feature import BatchMolGraph, get_bond_fdim, get_atom_fdim
-from .nn_utils import initialize_weights, get_activation_function
-from .DGL_model import MGA
+from args import TrainArgs
+from feature import BatchMolGraph, get_bond_fdim, get_atom_fdim
+from nn_utils import initialize_weights, get_activation_function
+from DGL_model import MGA
 from dgl.nn.pytorch.conv import RelGraphConv,GATConv,APPNPConv
 from dgl.readout import sum_nodes
 class MoleculeModel(nn.Module):
 
     def __init__(self, args: TrainArgs):
         super(MoleculeModel, self).__init__()
+
+        self.return_weight = args.return_weight
 
         self.classification = args.dataset_type == "classification"
         self.loss_function = args.loss_function
@@ -45,8 +47,10 @@ class MoleculeModel(nn.Module):
 
     def create_MGA(self, args: TrainArgs)-> None:
         self.MGA = MGA(in_feats=args.in_feats, rgcn_hidden_feats=args.rgcn_hidden_feats, n_tasks=args.num_tasks,
+                       return_weight=self.return_weight,
                        rgcn_drop_out=args.rgcn_drop_out,classifier_hidden_feats=args.classifier_hidden_feats,
                        dropout=args.drop_out, loop=args.loop)
+
     def create_ffn(self, args: TrainArgs) -> None:
         first_linear_dim = args.hidden_size * args.number_of_molecules
         atom_first_linear_dim = first_linear_dim
@@ -82,21 +86,41 @@ class MoleculeModel(nn.Module):
             List[List[Tuple[Chem.Mol, Chem.Mol]]],
             List[BatchMolGraph],
         ],
-        dgls: List[BatchMolDGL]
-    ) -> torch.Tensor:
-
-        encodings = self.encoder(
-            batch
-        )
-        output = self.readout(encodings)
-        if self.classification:
-            output = self.sigmoid(output)
-        for dgl in dgls:
-            atom_feats = dgl.get_atom_feats()
-            bond_feats = dgl.get_bond_feats()
-        MGA_output = self.MGA(dgls, atom_feats, bond_feats)
-        #MGA_ouput = self.sigmoid(MGA_ouput)
-        output = self.Linner(torch.cat([output, MGA_output], dim=1))
+        dgls: Union[
+            List[BatchMolDGL],
+            List[MolDGL]
+        ]
+    ) -> Union[
+        torch.Tensor,
+        tuple,
+    ]:
+        if self.return_weight:
+            encodings = self.encoder(
+                batch
+            )
+            output = self.readout(encodings)
+            if self.classification:
+                output = self.sigmoid(output)
+            for dgl in dgls:
+                atom_feats = dgl.get_atom_feats()
+                bond_feats = dgl.get_bond_feats()
+            MGA_output, node_gradient = self.MGA(dgls, atom_feats, bond_feats)
+            #MGA_ouput = self.sigmoid(MGA_ouput)
+            output = self.Linner(torch.cat([output, MGA_output], dim=1))
+            return output, MGA_output, node_gradient
+        else:
+            encodings = self.encoder(
+                batch
+            )
+            output = self.readout(encodings)
+            if self.classification:
+                output = self.sigmoid(output)
+            for dgl in dgls:
+                atom_feats = dgl.get_atom_feats()
+                bond_feats = dgl.get_bond_feats()
+            MGA_output = self.MGA(dgls, atom_feats, bond_feats)
+            # MGA_ouput = self.sigmoid(MGA_ouput)
+            output = self.Linner(torch.cat([output, MGA_output], dim=1))
 
         return output
 
@@ -422,9 +446,37 @@ class BaseGNN(nn.Module):
         else:
             # generate atom weight and atom feats
             if self.return_weight:
-                return prediction_all, atom_weight_list, node_feats
+                node_gradient_all = []
+                for i in range(self.task_num):
+                    device = 'cpu'
+                    baseline = torch.zeros(node_feats.shape).to(device)
+                    scaled_nodefeats = [baseline + (float(i) / 50) * (node_feats - baseline) for i in range(0, 51)]
+                    gradients = []
+                    for scaled_nodefeat in scaled_nodefeats:
+                        scaled_hg, scaled_atom_weight = self.weighted_sum_readout(bg, scaled_nodefeat)
+                        scaled_feats = scaled_hg[i]
+                        h1 = self.fc_layers1[i](scaled_feats)
+                        h2 = self.fc_layers2[i](h1)
+                        h3 = self.fc_layers3[i](h2)
+                        scaled_Final_feature = self.output_layer1[i](h3)
+                        gradient = torch.autograd.grad(scaled_Final_feature[0][0], scaled_nodefeat)[0]
+                        gradient = gradient.detach().cpu().numpy()
+                        gradients.append(gradient)
+                    gradients = np.array(gradients)
+                    grads = (gradients[:-1] + gradients[1:]) / 2.0
+                    avg_grads = np.average(grads, axis=0)
+                    avg_grads = torch.from_numpy(avg_grads).to(device)
+                    integrated_gradients = (node_feats - baseline) * avg_grads
+                    phi0 = []
+                    for j in range(node_feats.shape[0]):
+                        a = sum(integrated_gradients[j].detach().cpu().numpy().tolist())
+                        phi0.append(a)
+                    node_gradient = torch.tensor(phi0)
+                    node_gradient_all.append(node_gradient)
+                return prediction_all, node_gradient_all#atom_weight_list, node_feats
             # just generate prediction
             return prediction_all
+
 
     def fc_layer(self, dropout, in_feats, hidden_feats):
         return nn.Sequential(

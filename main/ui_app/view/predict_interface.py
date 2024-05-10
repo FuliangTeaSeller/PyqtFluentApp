@@ -1,7 +1,7 @@
 # coding:utf-8
 import io, os
 from time import sleep
-from PyQt5.QtCore import Qt, QSize,QUrl,QTimer
+from PyQt5.QtCore import Qt, QSize,QUrl,QTimer, QThread, pyqtSignal
 from PyQt5.QtWidgets import QAction, QWidget, QVBoxLayout, QButtonGroup,QLabel,QStackedWidget,QHBoxLayout
 from qfluentwidgets import (LineEdit,BodyLabel,PushButton,FlowLayout,VBoxLayout,Pivot,PlainTextEdit,InfoBar,InfoBarPosition)
 from PyQt5.QtGui import QPainter,QFont
@@ -14,6 +14,7 @@ from .predict_result_interface import PredictResultInterface
 from .gallery_interface import GalleryInterface
 from ..common.translator import Translator
 from ..common.style_sheet import StyleSheet
+from functools import wraps
 
 import sys
 sys.path.append("E:/Python/PyqtFluentApp/main/Predictor")
@@ -33,16 +34,15 @@ class PredictInterface(GalleryInterface):
             parent=parent
         )
         self.setObjectName('predictInterface')
-        
         self.currentsmiles = ''
         
         self.pivot = Pivot(self)
         self.stackedWidget = QStackedWidget(self)
         
-        # 设置定时器来定期从 JSME 编辑器获取 SMILES 字符串
-        # self.timer = QTimer(self)
-        # self.timer.timeout.connect(self.fetchSmiles)
-        # self.timer.start(100)  # 每1秒获取一次
+        #设置定时器来定期从 JSME 编辑器获取 SMILES 字符串
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.fetchSmiles)
+        self.timer.start(100)  # 每1秒获取一次
 
         # self.lineEdit = LineEdit()
         # self.lineEdit.setObjectName("lineEdit")
@@ -51,8 +51,6 @@ class PredictInterface(GalleryInterface):
         self.pushButton.setObjectName("pushButton")
         self.pushButton.setText("预测")
 
-        '''self.applybutton = PushButton('绘制完毕')
-        self.applybutton.clicked.connect(self.fetchSmiles)'''
         
         self.Tab1_Jsme()
         self.Tab2_Input()
@@ -78,34 +76,29 @@ class PredictInterface(GalleryInterface):
         
     def Tox21(self):
         InfoBar.info(
-        title='预测中',
-        content="请稍等...",
-        orient=Qt.Horizontal,
-        isClosable=False,
-        position=InfoBarPosition.TOP,
-        duration=5000,
-        parent=self
+            title='预测中',
+            content="请稍等...",
+            orient=Qt.Horizontal,
+            isClosable=False,
+            position=InfoBarPosition.TOP,
+            duration=5000,
+            parent=self
         )
         # 获取分子式
         current_index = self.stackedWidget.currentIndex()
         if current_index == 1:
             molecule = self.textEdit.toPlainText()
-        elif current_index ==0:
-            # 执行 JavaScript 代码获取 SMILES 字符串
-            js_code = "jsmeApplet.smiles();"
-            self.web_view.page().runJavaScript(js_code, self.setFromJSMESmiles)
-            self.web_view.page().runJavaScript(js_code, self.setFromJSMESmiles)
+        elif current_index == 0:
             molecule = self.currentsmiles
-        else :
-            pass
-        #self.tox_result = tox_result(molecule)
-        #self.tox_result.show()
+
         print('molecule:')
         print(molecule)
 
-
-        result = Predict(molecule)
-        InfoBar.success(
+        self.smiles_thread = predThread(molecule)
+        self.smiles_thread.result.connect(self.thread_result)
+        self.smiles_thread.start()
+        #result = Predict(molecule)
+        '''InfoBar.success(
         title='预测成功',
         content="自动打开结果界面",
         orient=Qt.Horizontal,
@@ -118,23 +111,16 @@ class PredictInterface(GalleryInterface):
         print(result)
         
         self.predictResultInterface = PredictResultInterface(result)
-        self.predictResultInterface.show()
+        self.predictResultInterface.show()'''
         
     def Tab1_Jsme(self):
         self.tab_1 = QWidget()
         self.addSubInterface(self.tab_1, 'tab_1', '使用JSME分子编辑器画出分子')
         # 创建WebEngineView部件
-        '''self.smilelabel = BodyLabel("当前smiles:")
-        self.smilelabel.setWordWrap(True)
-        self.smilelabel.setMinimumSize(100,10)'''
-        
         self.web_view = QWebEngineView(self)
         # self.web_view = FramelessWebEngineView(self)
         # self.web_view = QLabel("JSME编辑器")
         self.web_view.setMinimumSize(405, 350)
-        
-        '''self.applybutton = PushButton('绘制完毕')
-        self.applybutton.clicked.connect(self.fetchSmiles)'''
         
         # 加载JSME编辑器的HTML文件
         # 获取当前文件的绝对路径
@@ -214,13 +200,41 @@ class PredictInterface(GalleryInterface):
     def onCurrentIndexChanged(self, index):
         widget = self.stackedWidget.widget(index)
         self.pivot.setCurrentItem(widget.objectName())
-        
+
     def fetchSmiles(self):
         # 执行 JavaScript 代码获取 SMILES 字符串
         js_code = "jsmeApplet.smiles();"
         self.web_view.page().runJavaScript(js_code, self.setFromJSMESmiles)
 
+
     def setFromJSMESmiles(self, smiles):
         self.currentsmiles = smiles
-        print("Current SMILES:", self.currentsmiles)
+
+    def thread_result(self, result):
+        InfoBar.success(
+            title='预测成功',
+            content="自动打开结果界面",
+            orient=Qt.Horizontal,
+            isClosable=False,
+            position=InfoBarPosition.TOP,
+            duration=5000,
+            parent=self
+        )
+        print('result:')
+        print(result)
+
+        self.predictResultInterface = PredictResultInterface(result)
+        self.predictResultInterface.show()
+
+class predThread(QThread):
+    result = pyqtSignal(list)
+    def __init__(self, smiles):
+        super().__init__()
+        self.smiles = smiles
+
+    def run(self):
+        result = Predict(self.smiles)
+        self.result.emit(result)
+
+
         

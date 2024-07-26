@@ -68,7 +68,7 @@ class MainWindow(FluentWindow):
         # self.setMinimumWidth(760)
         self.resize(780, 780)
         self.setMinimumWidth(780)
-        self.setWindowIcon(QIcon('E:/Python/PyqtFluentApp/main/ui_app/resource/images/logo_new.png'))
+        self.setWindowIcon(QIcon(':/gallery/images/logo_new.png'))
         self.setWindowTitle('Detective Molecular Inspector 分子探长')
 
         # self.setMicaEffectEnabled(cfg.get(cfg.micaEnabled))

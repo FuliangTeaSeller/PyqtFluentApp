@@ -117,8 +117,8 @@ class PredictInterface(GalleryInterface):
         self.tab_1 = QWidget()
         self.addSubInterface(self.tab_1, 'tab_1', '使用JSME分子编辑器画出分子')
         # 创建WebEngineView部件
-        self.web_view = QWebEngineView(self)
-        # self.web_view = FramelessWebEngineView(self)
+        # self.web_view = QWebEngineView(self)
+        self.web_view = FramelessWebEngineView(self)
         # self.web_view = QLabel("JSME编辑器")
         self.web_view.setMinimumSize(405, 350)
         
@@ -223,7 +223,7 @@ class PredictInterface(GalleryInterface):
         print('result:')
         print(result)
 
-        self.predictResultInterface = PredictResultInterface(result)
+        self.predictResultInterface = PredictResultInterface(result=result)
         self.predictResultInterface.show()
 
 class predThread(QThread):
